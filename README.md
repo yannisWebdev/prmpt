@@ -1,257 +1,235 @@
-# OBJECTIF
+# MISSION
 
-Je veux que tu construises une application web **100 % frontend** permettant de visualiser et d'explorer des logs réseau provenant de terminaux mobiles fictifs.
+Tu dois développer progressivement une application React existante appelée :
 
-L'application doit être développée avec :
+**Network Log Explorer**
+
+L'application permet de visualiser et explorer des logs réseau fictifs provenant de terminaux mobiles.
+
+Technologies obligatoires :
 
 * React
 * Vite
 * Tailwind CSS
-* JavaScript uniquement, pas TypeScript
-* composants React réutilisables
-* architecture propre et maintenable
-* données entièrement mockées côté frontend
-* `localStorage` pour la persistance des bookmarks, notes, highlights et préférences
+* JavaScript uniquement
+* `lucide-react`
+* `@tanstack/react-virtual`
 
-Il n'y a :
+Application **100 % frontend**.
 
-* aucun backend ;
-* aucune API ;
-* aucune base de données ;
-* aucun WebSocket ;
-* aucun serveur de logs ;
-* aucune intégration Grafana ;
-* aucune intégration Datadog ;
-* aucune intégration Kibana ;
-* aucune notion d'infrastructure d'observabilité.
+Interdictions :
 
-Le projet est uniquement une **application frontend de visualisation de logs réseau fictifs**.
+* TypeScript
+* backend
+* API
+* Express
+* FastAPI
+* base de données
+* WebSocket
+* Grafana
+* Loki
+* Prometheus
+* Datadog
+* Kibana
 
-Je ne veux PAS d'une simple maquette statique.
+Les logs sont générés localement.
 
-Toutes les fonctionnalités décrites ci-dessous doivent fonctionner réellement avec les données mockées.
-
----
-
-# 1. CONTEXTE
-
-Des terminaux mobiles fictifs produisent régulièrement des logs concernant leur connectivité réseau.
-
-Chaque log doit notamment contenir :
-
-* le terminal concerné ;
-* la date et l'heure ;
-* l'opérateur mobile utilisé ;
-* la qualité du réseau ;
-* la valeur RSRP ;
-* le niveau du log ;
-* un message ;
-* du contexte technique supplémentaire.
-
-Opérateurs disponibles :
-
-* Orange
-* SFR
-* Bouygues Telecom
-* Free
-
-Niveaux :
-
-* INFO
-* WARNING
-* ERROR
-
-L'objectif de l'interface est de permettre de parcourir rapidement plusieurs milliers de logs afin d'identifier :
-
-* les erreurs ;
-* les warnings ;
-* les périodes de mauvaise qualité réseau ;
-* les changements d'opérateur ;
-* les mauvaises valeurs RSRP ;
-* les événements particuliers concernant un terminal.
+Les bookmarks, notes, highlights et préférences sont stockés avec `localStorage`.
 
 ---
 
-# 2. DESIGN GLOBAL
+# RÈGLE PRINCIPALE : TRAVAILLER PAR PETITES ÉTAPES
 
-Je veux une interface :
+IMPORTANT : tu es un agent de développement.
 
-* professionnelle ;
-* moderne ;
-* sobre ;
-* dense ;
-* très lisible ;
-* orientée application desktop ;
-* adaptée à l'affichage de beaucoup de données.
+Tu ne dois PAS essayer de réaliser toute l'application dans une seule réponse.
 
-Ne fais pas un dashboard composé de grosses cards.
+Travaille exclusivement par petites étapes.
 
-Évite :
+À chaque tour :
 
-* les énormes border-radius ;
-* les composants surdimensionnés ;
-* les couleurs décoratives inutiles ;
-* les grands espaces perdus.
+1. inspecte seulement ce qui est nécessaire ;
+2. réalise UNE petite étape cohérente ;
+3. modifie directement les fichiers concernés ;
+4. vérifie rapidement ton travail ;
+5. arrête-toi.
 
-Privilégie :
-
-* bordures fines ;
-* faible border-radius ;
-* toolbar compacte ;
-* typographie claire ;
-* police monospace dans les logs ;
-* forte densité d'information ;
-* excellente hiérarchie visuelle.
-
-Prévoir :
-
-* thème clair ;
-* thème sombre ;
-* bouton permettant de basculer entre les deux.
-
-Le dark mode doit être particulièrement soigné.
+Ne réalise jamais plusieurs grandes phases dans le même tour.
 
 ---
 
-# 3. LAYOUT PRINCIPAL
+# CONTRÔLE DE LA TAILLE DES RÉPONSES
 
-L'application doit occuper pratiquement tout le viewport.
+Ta réponse finale après chaque étape doit être TRÈS COURTE.
 
-Structure générale :
+Maximum recommandé :
+
+**300 mots.**
+
+Ne recopie jamais le contenu complet des fichiers que tu viens de modifier.
+
+Ne montre pas de fichier entier sauf si l'utilisateur le demande explicitement.
+
+Ne donne pas de long tutoriel.
+
+Ne répète pas les exigences du projet.
+
+Ne fais pas de résumé détaillé du raisonnement.
+
+Ne produis pas ton raisonnement interne.
+
+Réfléchis silencieusement puis exécute.
+
+Après une modification, réponds simplement avec :
 
 ```text
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ TOOLBAR                                                                      │
-├─────┬─────────────────────────────────────────────┬───────────┬──────────────┤
-│ OP  │                                             │           │              │
-│ BAR │               LOG VIEWER                    │  MINIMAP  │  BOOKMARKS   │
-│     │                                             │           │   & NOTES    │
-│     │                                             │           │              │
-└─────┴─────────────────────────────────────────────┴───────────┴──────────────┘
+Étape terminée : <nom>
+
+Modifié :
+- fichier
+- fichier
+
+Fait :
+- ...
+- ...
+
+Vérification :
+- ...
+
+Prochaine étape :
+- ...
 ```
 
-Les différentes zones sont :
-
-1. Toolbar supérieure
-2. Operator Strip très fin à gauche
-3. Log Viewer principal
-4. Minimap / heatmap verticale à droite
-5. Panneau Bookmarks & Notes encore plus à droite
-
-Le Log Viewer doit conserver la majorité de l'espace disponible.
-
-Le panneau Bookmarks doit pouvoir être ouvert et fermé.
+Maximum 5 à 8 lignes si possible.
 
 ---
 
-# 4. GÉNÉRATION DES MOCKS
+# RÈGLE DE DÉCOUPAGE
 
-Créer un véritable générateur de logs.
+Une étape doit idéalement modifier :
 
-Ne pas écrire manuellement 20 lignes statiques.
+* 1 fichier ;
+* 2 fichiers ;
+* maximum 3 fichiers si nécessaire.
 
-Créer entre :
+Exception uniquement si une modification mécanique très simple nécessite plusieurs fichiers.
 
-```text
-10 000 et 20 000 logs
-```
+Évite les énormes modifications d'un seul coup.
 
-afin de réellement tester :
+---
 
-* la virtualisation ;
-* le scroll ;
-* les performances ;
-* les filtres ;
-* la minimap ;
-* les bookmarks.
+# RÈGLE D'AUTONOMIE
 
-Créer par exemple :
+Ne demande pas confirmation entre les étapes.
 
-```text
-src/mocks/generateLogs.js
-```
+Si un choix technique mineur n'est pas spécifié :
 
-Structure indicative d'un log :
+* choisis la solution la plus simple ;
+* évite l'over-engineering ;
+* reste cohérent avec l'architecture existante.
+
+Si tu termines une étape, arrête ta réponse.
+
+Au prochain tour, continue automatiquement à partir de l'étape suivante.
+
+---
+
+# RÈGLE DE CONTEXTE
+
+Avant de modifier un fichier :
+
+1. inspecte-le ;
+2. comprends son rôle ;
+3. modifie uniquement ce qui est nécessaire.
+
+Ne réécris pas inutilement un fichier complet.
+
+Ne casse pas une fonctionnalité déjà fonctionnelle.
+
+Conserve la configuration React/Vite/Tailwind existante si elle fonctionne.
+
+---
+
+# OBJECTIF FONCTIONNEL
+
+L'application affiche entre **10 000 et 20 000 logs réseau fictifs**.
+
+Chaque log contient au minimum :
 
 ```js
 {
-  id: "log_000001",
-
-  timestamp: "2026-09-12T14:32:45.213Z",
-
-  deviceId: "DEVICE-042",
-
-  operator: "Orange",
-
-  rsrp: -92,
-
-  severity: "INFO",
-
-  message: "Network connection stable",
-
+  id,
+  timestamp,
+  deviceId,
+  operator,
+  rsrp,
+  severity,
+  message,
   context: {
-    networkType: "5G",
-    cellId: "20801-394829",
-    frequency: 3500,
-    latency: 32,
-    packetLoss: 0.2,
-    signalQuality: "good"
+    networkType,
+    cellId,
+    frequency,
+    latency,
+    packetLoss,
+    signalQuality
   }
 }
 ```
 
-Créer environ 10 à 30 terminaux fictifs :
+Opérateurs :
+
+```text
+Orange
+SFR
+Bouygues Telecom
+Free
+```
+
+Severity :
+
+```text
+INFO
+WARNING
+ERROR
+```
+
+Créer environ 10 à 30 devices :
 
 ```text
 DEVICE-001
 DEVICE-002
-DEVICE-003
 ...
 ```
 
-Faire varier de manière cohérente :
-
-* timestamp ;
-* terminal ;
-* opérateur ;
-* severity ;
-* RSRP ;
-* network type ;
-* latency ;
-* packet loss ;
-* fréquence ;
-* cell ID ;
-* message.
-
 ---
 
-# 5. MOCKS RÉALISTES
+# MOCKS RÉALISTES
 
-Les mocks ne doivent pas être complètement aléatoires.
+Ne génère pas simplement des valeurs totalement aléatoires.
 
-Créer des séquences cohérentes.
+Les logs doivent former des séquences cohérentes.
 
-Par exemple :
+Exemple de dégradation :
 
 ```text
--86 dBm
--88 dBm
--91 dBm
--95 dBm
--101 dBm
--107 dBm
--113 dBm
--118 dBm
+-86
+-88
+-91
+-95
+-101
+-107
+-113
+-118
 ```
 
-puis éventuellement :
+Puis éventuellement :
 
 ```text
 WARNING Weak signal detected
 ERROR Network connection lost
 ```
 
-Créer aussi des périodes de récupération :
+Puis récupération :
 
 ```text
 -116
@@ -261,72 +239,61 @@ Créer aussi des périodes de récupération :
 -88
 ```
 
-Le dataset doit contenir des scénarios intéressants à visualiser.
+Les opérateurs doivent également rester identiques pendant plusieurs logs avant de changer.
+
+Évite :
+
+```text
+Orange
+Free
+SFR
+Orange
+Free
+```
+
+Préfère :
+
+```text
+Orange
+Orange
+Orange
+Orange
+SFR
+SFR
+SFR
+Bouygues
+Bouygues
+```
+
+Lors d'un changement :
+
+```text
+Operator changed from Orange to SFR
+```
 
 ---
 
-# 6. RSRP
+# RSRP
 
-Utiliser des valeurs réalistes.
-
-Référence approximative :
-
-```text
->= -80 dBm       Excellent
--80 à -90 dBm    Very Good
--90 à -100 dBm   Good
--100 à -110 dBm  Poor
-< -110 dBm       Critical
-```
-
-Créer une fonction utilitaire :
+Créer :
 
 ```js
 getRsrpQuality(rsrp)
 ```
 
-pour centraliser cette logique.
+Référence :
 
----
-
-# 7. CORRÉLATION SEVERITY / RÉSEAU
+```text
+>= -80       Excellent
+-80 à -90    Very Good
+-90 à -100   Good
+-100 à -110  Poor
+< -110       Critical
+```
 
 La severity doit être partiellement corrélée à la qualité réseau.
 
 Exemples :
-
-### INFO
-
-* connexion normale ;
-* changement de cellule réussi ;
-* bonne qualité réseau ;
-* signal mis à jour ;
-* connexion établie.
-
-### WARNING
-
-* signal faible ;
-* latence élevée ;
-* packet loss ;
-* dégradation progressive ;
-* fallback de 5G vers 4G.
-
-### ERROR
-
-* perte réseau ;
-* handover failed ;
-* timeout ;
-* network registration failed ;
-* packet transmission failed ;
-* signal extrêmement faible.
-
-Ne rends cependant pas toutes les erreurs uniquement dépendantes du RSRP.
-
----
-
-# 8. MESSAGES MOCKÉS
-
-Créer plusieurs dizaines de messages possibles.
 
 INFO :
 
@@ -335,7 +302,6 @@ Network connection established
 Network connection stable
 Operator selected
 Cell handover completed
-Network type changed from 4G to 5G
 Signal strength updated
 Data session established
 ```
@@ -346,7 +312,6 @@ WARNING :
 Weak signal detected
 High network latency
 Packet loss detected
-Frequent cell handovers detected
 Signal degradation detected
 Network type fallback to 4G
 ```
@@ -358,29 +323,83 @@ Network connection lost
 Data session timeout
 Cell handover failed
 Network registration failed
-SIM registration error
 Severe signal degradation
 Packet transmission failed
 ```
 
+Toutes les erreurs ne doivent cependant pas dépendre uniquement du RSRP.
+
 ---
 
-# 9. LOG VIEWER
+# DESIGN
 
-Le Log Viewer est le cœur de l'application.
+Interface :
 
-Chaque log correspond à une ligne compacte.
+* professionnelle ;
+* moderne ;
+* sobre ;
+* dense ;
+* desktop-first ;
+* très lisible.
+
+Éviter :
+
+* grosses cards ;
+* énormes border-radius ;
+* couleurs décoratives ;
+* espaces excessifs.
+
+Privilégier :
+
+* bordures fines ;
+* petits radius ;
+* toolbar compacte ;
+* forte densité ;
+* typographie claire ;
+* monospace pour les logs.
+
+Support :
+
+* dark mode ;
+* light mode.
+
+Le dark mode doit être particulièrement propre.
+
+---
+
+# LAYOUT
+
+Organisation générale :
+
+```text
+┌───────────────────────────────────────────────────────────────┐
+│ TOOLBAR                                                       │
+├────┬──────────────────────────────┬──────────┬────────────────┤
+│ OP │                              │ MINIMAP  │ BOOKMARKS      │
+│    │         LOG VIEWER           │          │ & NOTES        │
+│    │                              │          │                │
+└────┴──────────────────────────────┴──────────┴────────────────┘
+```
+
+Le Log Viewer occupe la majorité de l'écran.
+
+Le panneau Bookmarks peut être fermé.
+
+---
+
+# LOG VIEWER
+
+Le Log Viewer est la fonctionnalité principale.
 
 Exemple :
 
 ```text
-14:32:45.213 | DEVICE-042 | ORANGE | 5G | -92 dBm  | INFO    | Network connection stable
-14:32:47.501 | DEVICE-042 | ORANGE | 5G | -95 dBm  | INFO    | Signal strength updated
-14:32:50.304 | DEVICE-042 | ORANGE | 5G | -104 dBm | WARNING | Weak signal detected
-14:32:55.114 | DEVICE-042 | ORANGE | 4G | -116 dBm | ERROR   | Network connection lost
+14:32:45.213 | DEVICE-042 | ORANGE | 5G | -92 dBm  | INFO  | Network connection stable
+14:32:50.304 | DEVICE-042 | ORANGE | 5G | -104 dBm | WARN  | Weak signal detected
+14:32:55.114 | DEVICE-042 | ORANGE | 4G | -116 dBm | ERROR | Network connection lost
 ```
 
-Colonnes principales :
+Colonnes :
 
 ```text
 timestamp
@@ -392,22 +411,45 @@ severity
 message
 ```
 
-Les colonnes doivent être parfaitement alignées.
+Contraintes :
 
-Utiliser une police monospace.
-
-La hauteur d'une ligne doit rester faible afin de pouvoir afficher beaucoup de logs.
+* lignes compactes ;
+* police monospace ;
+* colonnes alignées ;
+* scroll fluide.
 
 ---
 
-# 10. DÉTAIL D'UN LOG
+# VIRTUALISATION
 
-Cliquer sur une ligne doit permettre de consulter davantage d'informations.
+Obligatoire.
 
-Afficher par exemple :
+Utiliser :
+
+```text
+@tanstack/react-virtual
+```
+
+Ne jamais rendre 20 000 lignes simultanément dans le DOM.
+
+Ordre :
+
+```text
+ancien
+↓
+récent
+```
+
+Scroll vers le bas = avancer dans le temps.
+
+---
+
+# DÉTAIL D'UN LOG
+
+Cliquer sur une ligne permet de consulter :
 
 * Device ID
-* Timestamp complet
+* Timestamp
 * Operator
 * RSRP
 * Network type
@@ -418,223 +460,67 @@ Afficher par exemple :
 * Signal quality
 * Message
 * Severity
+* contexte JSON
 
-Prévoir également une représentation lisible du contexte :
-
-```json
-{
-  "networkType": "5G",
-  "cellId": "20801-394829",
-  "frequency": 3500,
-  "latency": 32,
-  "packetLoss": 0.2
-}
-```
-
-Le détail peut être :
-
-* expandable inline ;
-* ou affiché dans un petit panneau contextuel.
-
-Choisis la solution la plus cohérente avec le Log Viewer.
+Choisir une UI compacte cohérente avec le Log Viewer.
 
 ---
 
-# 11. VIRTUALISATION
+# OPERATOR STRIP
 
-Cette fonctionnalité est obligatoire.
-
-L'application doit rester fluide avec :
-
-```text
-20 000 logs
-```
-
-Ne jamais rendre directement les 20 000 lignes dans le DOM.
-
-Utiliser :
-
-```text
-@tanstack/react-virtual
-```
-
-ou une solution légère équivalente si réellement plus appropriée.
-
-Le scroll doit être fluide.
-
----
-
-# 12. ORDRE TEMPOREL
-
-Afficher par défaut :
-
-```text
-plus ancien
-↓
-↓
-↓
-plus récent
-```
-
-Donc :
-
-```text
-scroll vers le haut = remonter dans le passé
-scroll vers le bas = avancer dans le temps
-```
-
-L'utilisateur doit pouvoir parcourir toute la timeline de manière naturelle.
-
----
-
-# 13. OPERATOR STRIP
-
-Ajouter immédiatement à gauche du Log Viewer une bande verticale très fine.
-
-Cette bande représente l'opérateur de chaque ligne.
+Ajouter une bande très fine immédiatement à gauche du Log Viewer.
 
 Couleurs :
 
 ```text
-Orange            → orange
-SFR               → rouge
-Free              → violet
-Bouygues Telecom  → bleu
+Orange           orange
+SFR              rouge
+Free             violet
+Bouygues Telecom bleu
 ```
 
 IMPORTANT :
 
-Ne colore PAS toute la ligne du log en fonction de l'opérateur.
+Ne colore jamais toute la ligne selon l'opérateur.
 
-Seul le segment de l'Operator Strip correspondant à la ligne doit être coloré.
+Uniquement la bande correspondante.
 
-Exemple :
-
-```text
-│ ORANGE │ log
-│ ORANGE │ log
-│ ORANGE │ log
-│ RED    │ log
-│ RED    │ log
-│ PURPLE │ log
-│ BLUE   │ log
-│ BLUE   │ log
-```
-
-La bande doit être parfaitement synchronisée avec les lignes actuellement visibles.
-
-Elle ne doit pas être une décoration indépendante.
+La bande doit être parfaitement synchronisée avec les lignes visibles.
 
 ---
 
-# 14. CHANGEMENTS D'OPÉRATEUR
+# MINIMAP
 
-Les mocks doivent contenir des périodes cohérentes d'utilisation d'un opérateur.
+Ajouter une minimap verticale à droite du Log Viewer.
 
-Évite :
+Principe similaire à l'overview ruler de VS Code.
 
-```text
-Orange
-Free
-SFR
-Orange
-Bouygues
-Free
-Orange
-```
-
-à chaque ligne.
-
-Préfère des séquences :
+Couleurs :
 
 ```text
-Orange
-Orange
-Orange
-Orange
-Orange
-SFR
-SFR
-SFR
-SFR
-Bouygues
-Bouygues
-...
+INFO    bleu
+WARNING ambre
+ERROR   rouge
 ```
 
-Lors d'un changement, un log peut être généré :
-
-```text
-Operator changed from Orange to SFR
-```
-
-Cela rend l'Operator Strip beaucoup plus intéressant visuellement.
-
----
-
-# 15. MINIMAP
-
-À droite du Log Viewer, créer une minimap verticale inspirée du principe de l'overview ruler de VS Code.
-
-Elle doit représenter la répartition des événements sur l'ensemble des logs actuellement affichables.
-
-Code couleur :
-
-```text
-ERROR   → rouge
-WARNING → ambre / jaune
-INFO    → bleu
-```
-
-Les erreurs doivent être visuellement plus importantes.
-
-La minimap doit permettre de comprendre immédiatement :
-
-* où se concentrent les erreurs ;
-* où apparaissent les warnings ;
-* quelles zones sont principalement composées d'informations normales.
-
----
-
-# 16. AGRÉGATION MINIMAP
-
-Il peut y avoir :
-
-```text
-20 000 logs
-```
-
-pour seulement :
-
-```text
-700 pixels
-```
-
-de hauteur disponible.
-
-Il faut donc agréger les logs.
-
-Créer une fonction indépendante du rendu React :
+Créer une fonction indépendante :
 
 ```js
 createMinimapBuckets(logs, bucketCount)
 ```
 
-Un bucket pourrait ressembler à :
+Exemple :
 
 ```js
 {
-  startIndex: 1200,
-  endIndex: 1229,
-
-  info: 23,
-  warning: 5,
-  error: 2,
-
-  dominantSeverity: "ERROR",
-
-  startTimestamp: "...",
-  endTimestamp: "..."
+  startIndex,
+  endIndex,
+  info,
+  warning,
+  error,
+  dominantSeverity,
+  startTimestamp,
+  endTimestamp
 }
 ```
 
@@ -644,369 +530,102 @@ Priorité :
 ERROR > WARNING > INFO
 ```
 
-La couleur et éventuellement l'intensité doivent représenter le contenu du bucket.
+Interactions obligatoires :
+
+* hover avec tooltip ;
+* clic pour naviguer ;
+* représentation du viewport courant ;
+* viewport synchronisé avec le scroll.
+
+Drag du viewport = bonus.
 
 ---
 
-# 17. INTERACTIONS MINIMAP
+# NAVIGATION PROGRAMMATIQUE
 
-La minimap doit être réellement interactive.
-
-## Hover
-
-Afficher un tooltip :
-
-```text
-14:30:00 → 14:32:00
-
-32 logs
-25 INFO
-5 WARNING
-2 ERROR
-```
-
-## Click
-
-Cliquer sur une zone doit faire défiler le Log Viewer jusqu'au groupe de logs correspondant.
-
-## Viewport
-
-Afficher clairement la partie du dataset actuellement visible.
-
-Exemple conceptuel :
-
-```text
-│ blue
-│ blue
-│ yellow
-├══════════┤
-║ VIEWPORT ║
-├══════════┤
-│ red
-│ red
-│ blue
-```
-
-Le viewport doit se déplacer en temps réel avec le scroll.
-
-## Bonus
-
-Si cela reste propre et robuste, permettre de dragger le viewport dans la minimap.
-
----
-
-# 18. SCROLL PROGRAMMATIQUE
-
-Centraliser la navigation vers un log avec une fonction du type :
+Centraliser la navigation :
 
 ```js
 scrollToLog(logId)
 ```
 
-Cette fonction sera utilisée par :
+Utiliser le virtualizer.
 
-* les bookmarks ;
-* la minimap ;
-* éventuellement d'autres interactions.
-
-Avec `@tanstack/react-virtual`, utiliser l'API du virtualizer.
-
-Éviter autant que possible :
+Éviter de piloter le scroll avec :
 
 ```js
 document.querySelector(...)
 ```
 
-pour piloter la navigation.
-
----
-
-# 19. LOG CIBLÉ
-
-Lorsqu'un log est atteint via un bookmark ou une navigation programmatique, utiliser un état :
+Lorsqu'un log est ciblé :
 
 ```js
 focusedLogId
 ```
 
-Afficher pendant environ une seconde :
-
-* un outline subtil ;
-* ou un léger flash de background.
-
-Le but est de montrer immédiatement à l'utilisateur quelle ligne vient d'être ciblée.
+Afficher un léger highlight temporaire pendant environ une seconde.
 
 ---
 
-# 20. HIGHLIGHT MANUEL
+# RECHERCHE PAR DATE
 
-L'utilisateur doit pouvoir surligner manuellement des logs.
+La barre de recherche doit aussi permettre de saisir ou sélectionner une date/heure.
 
-Prévoir une action :
+Lorsque l'utilisateur choisit une date :
 
-```text
-Highlight
-```
+1. trouver le log ayant le timestamp correspondant ou le plus proche ;
+2. retrouver son index dans le dataset filtré ;
+3. utiliser le virtualizer ;
+4. centrer approximativement le log ;
+5. appliquer `focusedLogId`.
 
-et quelques couleurs :
-
-* jaune ;
-* vert ;
-* bleu ;
-* violet ;
-* rose ;
-* orange.
-
-Le highlight doit apparaître subtilement derrière la ligne.
-
-Il doit être suffisamment transparent pour ne pas masquer :
-
-* severity ;
-* operator ;
-* sélection ;
-* contenu.
-
-Prévoir également :
-
-```text
-Remove highlight
-```
+Cette navigation doit fonctionner avec plusieurs milliers de logs.
 
 ---
 
-# 21. BOOKMARKS
+# FILTRES
 
-L'utilisateur doit pouvoir bookmarker n'importe quel log.
+Ajouter :
 
-Exemple d'icône :
+### Search
 
-```text
-Bookmark
-BookmarkCheck
-```
-
-avec `lucide-react`.
-
-Un bookmark pourrait avoir cette structure :
-
-```js
-{
-  logId: "log_1234",
-  createdAt: "2026-09-12T14:40:00Z",
-  note: ""
-}
-```
-
----
-
-# 22. NOTES
-
-Chaque bookmark peut avoir une note personnelle.
-
-Exemple :
-
-```text
-Perte réseau observée pendant le test terrain.
-```
-
-Permettre :
-
-* Add note
-* Edit note
-* Delete note
-
-Une note appartient au bookmark correspondant.
-
----
-
-# 23. PANNEAU BOOKMARKS & NOTES
-
-Créer à droite de la minimap un panneau latéral.
-
-Il doit pouvoir être :
-
-```text
-ouvert
-fermé
-```
-
-Lorsqu'il est fermé, il doit libérer pratiquement toute sa largeur.
-
-Exemple :
-
-```text
-BOOKMARKS
-
-★ 14:32:55
-DEVICE-042
-Network connection lost
-
-Perte réseau observée pendant le test.
-
-────────────────────
-
-★ 14:37:22
-DEVICE-012
-High network latency
-
-À comparer avec les autres événements.
-```
-
-Afficher éventuellement :
-
-```text
-8 bookmarks
-```
-
-dans la toolbar.
-
----
-
-# 24. NAVIGATION BOOKMARK → LOG
-
-Cliquer sur un bookmark doit :
-
-1. retrouver le log ;
-2. calculer son index ;
-3. utiliser le virtualizer pour naviguer vers lui ;
-4. si possible le centrer dans le Log Viewer ;
-5. appliquer temporairement l'effet `focusedLogId`.
-
-Cette fonctionnalité doit réellement fonctionner même avec plusieurs milliers de logs.
-
----
-
-# 25. LOCAL STORAGE
-
-Tout ce qui concerne les préférences de l'utilisateur doit être stocké côté navigateur avec :
-
-```js
-localStorage
-```
-
-Conserver notamment :
-
-* bookmarks ;
-* notes ;
-* highlights ;
-* thème ;
-* éventuellement état du panneau bookmarks.
-
-Créer un hook ou utilitaire propre :
-
-```text
-useLocalStorage.js
-```
-
-Ne pas appeler directement `localStorage` dans dix composants différents.
-
-Aucun backend n'est nécessaire pour ces données.
-
----
-
-# 26. TOOLBAR
-
-Créer une toolbar compacte.
-
-Exemple :
-
-```text
-Network Logs | 12,482 logs | Search... | Operator ▾ | Severity ▾ | Device ▾ | RSRP ▾ | Bookmarks 8 | Theme
-```
-
-Elle doit contenir :
-
-* nom de l'application ;
-* nombre de logs ;
-* recherche ;
-* filtres ;
-* compteur bookmarks ;
-* bouton ouverture du panneau bookmarks ;
-* changement de thème.
-
----
-
-# 27. STATISTIQUES COMPACTES
-
-Afficher dans la toolbar ou à proximité :
-
-```text
-12,482 logs
-407 errors
-1,782 warnings
-10,293 info
-```
-
-Pas de grosses cards KPI.
-
-Je veux une présentation compacte.
-
----
-
-# 28. RECHERCHE
-
-Ajouter une recherche textuelle.
-
-Elle doit pouvoir trouver des correspondances dans :
+Cherche dans :
 
 * message ;
-* device ID ;
+* device ;
 * operator ;
 * cell ID ;
-* contexte pertinent.
+* contexte.
 
-Éviter des recalculs inutiles.
+### Operator
 
-Utiliser `useMemo` lorsque pertinent.
-
----
-
-# 29. FILTRE OPÉRATEUR
-
-Permettre de sélectionner :
+Multi-select :
 
 ```text
-☑ Orange
-☑ SFR
-☑ Bouygues
-☑ Free
+Orange
+SFR
+Bouygues
+Free
 ```
 
-Plusieurs opérateurs doivent pouvoir être actifs simultanément.
-
----
-
-# 30. FILTRE SEVERITY
-
-Permettre :
+### Severity
 
 ```text
-☑ INFO
-☑ WARNING
-☑ ERROR
+INFO
+WARNING
+ERROR
 ```
 
-Afficher éventuellement le nombre d'éléments correspondant à chaque severity.
-
----
-
-# 31. FILTRE DEVICE
-
-Ajouter un filtre :
+### Device
 
 ```text
 All devices
 DEVICE-001
 DEVICE-002
-DEVICE-003
 ...
 ```
 
----
-
-# 32. FILTRE RSRP
-
-Permettre de filtrer par niveau :
+### RSRP
 
 ```text
 All
@@ -1017,13 +636,7 @@ Poor
 Critical
 ```
 
-ou utiliser un range si cela donne une meilleure UX.
-
----
-
-# 33. SYNCHRONISATION DES FILTRES
-
-Le dataset filtré doit alimenter :
+Le même dataset filtré doit alimenter :
 
 ```text
 Log Viewer
@@ -1032,15 +645,48 @@ Minimap
 Statistiques
 ```
 
-Tous ces composants doivent toujours représenter exactement le même dataset.
+---
 
-Si un bookmark pointe vers un log actuellement masqué par les filtres, afficher quelque chose comme :
+# BOOKMARKS
+
+Chaque log peut être bookmarké.
+
+Structure :
+
+```js
+{
+  logId,
+  createdAt,
+  note
+}
+```
+
+Utiliser `lucide-react`.
+
+Par exemple :
+
+```text
+Bookmark
+BookmarkCheck
+```
+
+Les bookmarks apparaissent dans un panneau à droite de la minimap.
+
+Cliquer sur un bookmark :
+
+1. retrouve le log ;
+2. retrouve son index ;
+3. navigue avec le virtualizer ;
+4. centre approximativement le log ;
+5. applique `focusedLogId`.
+
+Si le log est masqué par les filtres :
 
 ```text
 This log is hidden by the current filters.
 ```
 
-avec une action :
+avec :
 
 ```text
 Clear filters and show log
@@ -1048,91 +694,162 @@ Clear filters and show log
 
 ---
 
-# 34. SEVERITY BADGES
+# NOTES
 
-Afficher les severities discrètement :
+Un bookmark peut contenir une note.
+
+Actions :
 
 ```text
-INFO
-WARN
-ERROR
+Add note
+Edit note
+Delete note
 ```
+
+La note appartient au bookmark.
+
+---
+
+# HIGHLIGHTS
+
+Permettre de surligner manuellement un log.
 
 Couleurs :
 
-```text
-INFO    → bleu
-WARNING → ambre
-ERROR   → rouge
-```
+* jaune
+* vert
+* bleu
+* violet
+* rose
+* orange
 
-Ne colore pas toute la ligne.
+Le highlight doit rester subtil.
+
+Ajouter :
+
+```text
+Remove highlight
+```
 
 ---
 
-# 35. RSRP INDICATOR
+# LOCAL STORAGE
 
-Toujours afficher la valeur :
-
-```text
--87 dBm
--104 dBm
--118 dBm
-```
-
-Un petit indicateur de qualité peut être ajouté s'il reste discret.
-
-Exemple :
+Créer un utilitaire/hook centralisé :
 
 ```text
-▮▮▮▮ -78
-▮▮▮  -91
-▮▮   -104
-▮    -116
+useLocalStorage.js
 ```
 
-Mais ne surcharge pas l'interface.
+Persister :
 
----
-
-# 36. TOOLTIPS
-
-Ajouter quelques tooltips utiles.
-
-Par exemple pour le RSRP :
-
-```text
--112 dBm
-Critical signal
-```
-
-Pour certains éléments :
-
-```text
-ERROR
-Critical network event
-```
-
-Ne mets pas des tooltips partout.
-
----
-
-# 37. PERFORMANCE
-
-L'application doit rester fluide avec plus de 20 000 logs.
-
-Faire attention à :
-
-* virtualisation ;
-* rerenders ;
-* filtres ;
-* scroll events ;
-* minimap ;
 * bookmarks ;
+* notes ;
 * highlights ;
-* tooltips.
+* thème ;
+* éventuellement état du panneau bookmarks.
 
-Utiliser lorsque pertinent :
+Ne pas appeler `localStorage` directement depuis de nombreux composants.
+
+---
+
+# TOOLBAR
+
+Toolbar compacte avec approximativement :
+
+```text
+Network Logs | 12,482 logs | Search | Date | Operator | Severity | Device | RSRP | Bookmarks 8 | Theme
+```
+
+Afficher également de manière compacte :
+
+```text
+12,482 logs
+407 errors
+1,782 warnings
+10,293 info
+```
+
+Pas de grosses cards KPI.
+
+---
+
+# ARCHITECTURE CIBLE
+
+Utiliser une architecture proche de :
+
+```text
+src/
+├── components/
+│   ├── layout/
+│   ├── logs/
+│   ├── minimap/
+│   ├── bookmarks/
+│   ├── filters/
+│   └── ui/
+├── hooks/
+├── mocks/
+├── utils/
+├── constants/
+├── App.jsx
+├── main.jsx
+└── index.css
+```
+
+Composants recommandés :
+
+```text
+AppLayout
+LogToolbar
+
+LogViewer
+LogRow
+LogDetails
+OperatorStrip
+SeverityBadge
+RsrpIndicator
+
+LogMinimap
+MinimapTooltip
+
+BookmarkPanel
+BookmarkItem
+BookmarkNoteEditor
+
+SearchInput
+OperatorFilter
+SeverityFilter
+DeviceFilter
+RsrpFilter
+```
+
+Hooks/utilitaires possibles :
+
+```text
+useBookmarks
+useHighlights
+useLogFilters
+useLocalStorage
+
+generateLogs
+getRsrpQuality
+createMinimapBuckets
+formatDate
+```
+
+Ne mets jamais toute l'application dans `App.jsx`.
+
+---
+
+# PERFORMANCE
+
+Cible :
+
+```text
+20 000 logs
+```
+
+Utiliser lorsque réellement utile :
 
 ```js
 useMemo
@@ -1140,288 +857,38 @@ useCallback
 React.memo
 ```
 
-Ne pas faire de micro-optimisation inutile.
+Éviter les recalculs inutiles.
 
----
+Le virtualizer doit être la référence pour la position du scroll.
 
-# 38. SYNCHRONISATION GLOBALE
-
-Les éléments suivants doivent rester synchronisés :
+Doivent rester synchronisés :
 
 ```text
 Log Viewer
 Operator Strip
 Minimap
 Minimap viewport
-Bookmarks navigation
+Bookmarks
 Focused log
 Selected log
 ```
 
-Le Log Viewer / virtualizer doit être la référence principale concernant la position de scroll.
-
 ---
 
-# 39. ARCHITECTURE
-
-Organiser proprement le projet.
-
-Exemple :
-
-```text
-src/
-│
-├── components/
-│   ├── layout/
-│   │   ├── AppLayout.jsx
-│   │   └── Header.jsx
-│   │
-│   ├── logs/
-│   │   ├── LogViewer.jsx
-│   │   ├── LogRow.jsx
-│   │   ├── LogDetails.jsx
-│   │   ├── OperatorStrip.jsx
-│   │   ├── SeverityBadge.jsx
-│   │   └── RsrpIndicator.jsx
-│   │
-│   ├── minimap/
-│   │   ├── LogMinimap.jsx
-│   │   └── MinimapTooltip.jsx
-│   │
-│   ├── bookmarks/
-│   │   ├── BookmarkPanel.jsx
-│   │   ├── BookmarkItem.jsx
-│   │   └── BookmarkNoteEditor.jsx
-│   │
-│   ├── filters/
-│   │   ├── LogToolbar.jsx
-│   │   ├── SearchInput.jsx
-│   │   ├── OperatorFilter.jsx
-│   │   ├── SeverityFilter.jsx
-│   │   ├── DeviceFilter.jsx
-│   │   └── RsrpFilter.jsx
-│   │
-│   └── ui/
-│       ├── Tooltip.jsx
-│       ├── Dropdown.jsx
-│       └── IconButton.jsx
-│
-├── hooks/
-│   ├── useBookmarks.js
-│   ├── useHighlights.js
-│   ├── useLogFilters.js
-│   └── useLocalStorage.js
-│
-├── mocks/
-│   ├── generateLogs.js
-│   └── mockConfig.js
-│
-├── utils/
-│   ├── rsrp.js
-│   ├── logColors.js
-│   ├── minimap.js
-│   ├── formatDate.js
-│   └── logSearch.js
-│
-├── constants/
-│   └── logs.js
-│
-├── App.jsx
-├── main.jsx
-└── index.css
-```
-
-Cette architecture est indicative.
-
-Tu peux l'améliorer si tu trouves quelque chose de plus cohérent.
-
-IMPORTANT :
-
-Ne mets pas toute l'application dans `App.jsx`.
-
----
-
-# 40. GESTION DE L'ÉTAT
-
-Séparer clairement :
-
-## Dataset
-
-```text
-logs
-filteredLogs
-```
-
-## État UI
-
-```text
-selectedLog
-focusedLogId
-bookmarkPanelOpen
-expandedLog
-theme
-filters
-```
-
-## Données utilisateur locales
-
-```text
-bookmarks
-notes
-highlights
-```
-
-Tu peux utiliser :
-
-* React Context ;
-* hooks personnalisés ;
-* ou un petit store si cela simplifie réellement le projet.
-
-Ne mets pas Redux uniquement pour complexifier l'application.
-
----
-
-# 41. CONSTANTES
-
-Centraliser les couleurs.
-
-Par exemple :
-
-```js
-const OPERATOR_COLORS = {
-  Orange: "...",
-  SFR: "...",
-  Free: "...",
-  Bouygues: "..."
-}
-```
-
-Même principe pour :
-
-```js
-SEVERITY_COLORS
-HIGHLIGHT_COLORS
-```
-
-Ne duplique pas les valeurs dans différents composants.
-
----
-
-# 42. FRONTEND UNIQUEMENT
-
-Cette règle est importante.
-
-Le projet doit fonctionner intégralement dans le navigateur.
-
-Les logs sont créés par :
-
-```js
-generateLogs()
-```
-
-Ils restent en mémoire côté frontend.
-
-Les données utilisateur sont persistées via :
-
-```js
-localStorage
-```
-
-Ne crée pas :
-
-* serveur Node ;
-* Express ;
-* FastAPI ;
-* endpoints ;
-* fichiers backend ;
-* base de données ;
-* Docker backend ;
-* API REST ;
-* WebSocket ;
-* système d'observabilité.
-
-Tout doit fonctionner avec :
-
-```bash
-npm run dev
-```
-
-comme simple application Vite.
-
----
-
-# 43. RESPONSIVE
-
-L'application est prioritairement desktop.
-
-Optimiser notamment :
-
-```text
-1440 × 900
-1920 × 1080
-2560 × 1440
-```
-
-Sur des écrans plus petits :
-
-* le panneau bookmarks peut devenir un drawer ;
-* certaines colonnes secondaires peuvent être cachées ;
-* la minimap peut devenir plus étroite.
-
-Ne sacrifie pas l'expérience desktop pour essayer d'en faire une application mobile.
-
----
-
-# 44. ACCESSIBILITÉ
+# ACCESSIBILITÉ
 
 Prévoir :
 
-* navigation clavier ;
-* focus states ;
-* `aria-label` sur les boutons avec uniquement une icône ;
-* contrastes suffisants ;
-* boutons réellement cliquables et accessibles.
+* focus visible ;
+* navigation clavier raisonnable ;
+* `aria-label` sur les boutons icône ;
+* contrastes corrects.
 
 ---
 
-# 45. ICÔNES
+# DÉPENDANCES
 
-Utiliser :
-
-```text
-lucide-react
-```
-
-Exemples :
-
-```text
-Bookmark
-BookmarkCheck
-Search
-Filter
-PanelRight
-PanelRightClose
-Sun
-Moon
-ChevronDown
-ChevronRight
-X
-Highlighter
-StickyNote
-AlertTriangle
-CircleAlert
-Info
-```
-
-Ne pas utiliser des emojis comme icônes d'interface finales.
-
----
-
-# 46. DÉPENDANCES
-
-Limiter les dépendances.
-
-Principalement :
+Limiter les dépendances à :
 
 ```text
 react
@@ -1432,347 +899,624 @@ lucide-react
 @tanstack/react-virtual
 ```
 
-Ajouter une dépendance seulement si elle apporte une vraie valeur.
+N'ajouter une autre dépendance que si elle apporte une réelle valeur.
 
-Ne pas installer Material UI, Ant Design ou une énorme bibliothèque UI simplement pour obtenir quelques boutons.
+Pas de Material UI.
 
-Les composants visuels doivent principalement être construits avec React + Tailwind.
-
----
-
-# 47. QUALITÉ DU CODE
-
-Je veux :
-
-* composants lisibles ;
-* responsabilités clairement séparées ;
-* fonctions utilitaires indépendantes ;
-* hooks personnalisés lorsque pertinent ;
-* aucune duplication inutile ;
-* aucun composant gigantesque ;
-* commentaires uniquement lorsque le fonctionnement n'est pas évident.
-
-Évite absolument :
-
-```text
-App.jsx avec 1000 lignes
-```
+Pas d'Ant Design.
 
 ---
 
-# 48. EMPTY STATES
+# EMPTY STATES
 
-Gérer proprement :
-
-```text
-aucun log après filtrage
-aucun résultat de recherche
-aucun bookmark
-```
-
-Exemple :
+Gérer correctement :
 
 ```text
 No logs match the current filters.
+No search results.
+No bookmarks yet.
 ```
 
 ---
 
-# 49. LIVE MOCK MODE — BONUS
+# PLAN D'EXÉCUTION OBLIGATOIRE
 
-Après avoir terminé toutes les fonctionnalités principales, tu peux ajouter un mode :
+IMPORTANT :
 
-```text
-Live
-```
+Respecte exactement cet ordre.
 
-Toujours entièrement frontend.
+Chaque numéro ci-dessous contient plusieurs micro-étapes.
 
-Quand activé, générer localement un nouveau mock toutes les 1 à 3 secondes.
-
-Si l'utilisateur est déjà en bas :
-
-```text
-auto-scroll
-```
-
-S'il a remonté les logs :
-
-```text
-ne pas modifier son scroll
-```
-
-Afficher par exemple :
-
-```text
-12 new logs
-```
-
-avec un bouton pour revenir en bas.
-
-Cette fonctionnalité est secondaire.
-
-Ne la réalise qu'après les fonctionnalités principales.
+Ne réalise qu'une micro-étape par tour.
 
 ---
 
-# 50. ORDRE D'IMPLÉMENTATION
+## PHASE 1 — INSPECTION ET SQUELETTE
 
-Travaille dans cet ordre.
+### 1.1
 
-## Phase 1
+Inspecter :
 
-* inspecter le projet existant ;
-* vérifier React/Vite/Tailwind ;
-* conserver la configuration existante si elle fonctionne ;
-* construire le layout.
+```text
+package.json
+src/
+configuration Vite
+configuration Tailwind
+```
 
-## Phase 2
+Ne rien modifier inutilement.
 
-* créer le modèle de log ;
-* générer 10 000 à 20 000 mocks réalistes ;
-* créer les fonctions RSRP ;
-* créer les constantes.
+STOP.
 
-## Phase 3
+### 1.2
 
-* LogViewer ;
-* LogRow ;
-* virtualisation ;
-* détail d'un log.
+Définir l'architecture de dossiers minimale nécessaire.
 
-## Phase 4
+Créer uniquement les dossiers/fichiers de base nécessaires.
 
-* Operator Strip ;
-* synchronisation avec les lignes.
+STOP.
 
-## Phase 5
+### 1.3
 
-* minimap ;
-* buckets ;
-* tooltip ;
-* navigation par clic ;
-* viewport synchronisé.
+Créer le layout principal :
 
-## Phase 6
+```text
+Toolbar
+Operator Strip placeholder
+Log Viewer placeholder
+Minimap placeholder
+Bookmarks placeholder
+```
 
-* recherche ;
-* filtres operator ;
-* severity ;
-* device ;
-* RSRP.
-
-## Phase 7
-
-* bookmarks ;
-* notes ;
-* panneau latéral ;
-* navigation bookmark → log.
-
-## Phase 8
-
-* highlights ;
-* sélection des couleurs ;
-* persistance localStorage.
-
-## Phase 9
-
-* dark mode ;
-* light mode ;
-* polish UI ;
-* responsive desktop ;
-* animations subtiles.
-
-## Phase 10
-
-* tests manuels ;
-* performances ;
-* edge cases ;
-* build.
+STOP.
 
 ---
 
-# 51. CRITÈRES DE VALIDATION
+## PHASE 2 — MODÈLE ET MOCKS
 
-Avant de considérer la tâche terminée, vérifie tout ceci.
+### 2.1
 
-## Logs
+Créer les constantes :
 
-* 10 000+ logs ;
-* timestamps cohérents ;
-* données RSRP réalistes ;
-* opérateurs répartis par périodes ;
-* changements d'opérateur ;
-* INFO / WARNING / ERROR cohérents.
+```text
+operators
+severity
+couleurs
+```
 
-## Log Viewer
+STOP.
 
-* virtualisé ;
-* très fluide ;
-* colonnes alignées ;
-* navigation précise.
+### 2.2
 
-## Operator Strip
+Créer :
 
-* chaque ligne correspond à la bonne couleur ;
-* alignement parfait ;
-* scroll synchronisé.
+```js
+getRsrpQuality()
+```
 
-## Minimap
+STOP.
 
-* représente le dataset filtré ;
-* ERROR rouge ;
-* WARNING ambre ;
-* INFO bleu ;
-* agrégation fonctionnelle ;
-* tooltip ;
-* clic fonctionnel ;
-* viewport synchronisé.
+### 2.3
 
-## Bookmarks
+Créer la structure du générateur de logs.
 
-* ajout ;
-* suppression ;
-* notes ;
-* édition ;
-* navigation vers le log ;
-* persistance après refresh.
+Commencer avec un petit nombre de logs pour validation.
 
-## Highlights
+STOP.
 
-* ajout ;
-* choix de couleur ;
-* suppression ;
-* persistance après refresh.
+### 2.4
 
-## Filters
+Ajouter les séquences réalistes :
 
-* operator ;
-* severity ;
-* device ;
-* RSRP ;
-* recherche.
+```text
+dégradation
+récupération
+changements opérateur
+severity
+```
 
-## UI
+STOP.
 
-* dark mode ;
-* light mode ;
-* desktop responsive ;
-* panneau bookmarks collapsible ;
-* aucune grosse card inutile ;
-* interface dense et professionnelle.
+### 2.5
+
+Passer à environ 10 000-20 000 logs.
+
+STOP.
 
 ---
 
-# 52. TEST DU PROJET
+## PHASE 3 — LOG VIEWER
 
-À la fin :
+### 3.1
 
-1. installe les dépendances nécessaires ;
-2. vérifie que le projet démarre ;
-3. lance le build ;
-4. corrige toutes les erreurs ;
-5. corrige les warnings importants ;
-6. vérifie les principales interactions.
+Créer `LogRow`.
 
-Exécuter notamment :
+STOP.
+
+### 3.2
+
+Créer `LogViewer`.
+
+STOP.
+
+### 3.3
+
+Ajouter `@tanstack/react-virtual`.
+
+STOP.
+
+### 3.4
+
+Valider le scroll avec 20 000 logs.
+
+STOP.
+
+### 3.5
+
+Ajouter sélection d'une ligne.
+
+STOP.
+
+### 3.6
+
+Ajouter détail du log.
+
+STOP.
+
+---
+
+## PHASE 4 — OPERATOR STRIP
+
+### 4.1
+
+Créer `OperatorStrip`.
+
+STOP.
+
+### 4.2
+
+Synchroniser exactement avec les lignes virtualisées.
+
+STOP.
+
+---
+
+## PHASE 5 — MINIMAP
+
+### 5.1
+
+Créer :
+
+```js
+createMinimapBuckets()
+```
+
+STOP.
+
+### 5.2
+
+Afficher les buckets.
+
+STOP.
+
+### 5.3
+
+Ajouter les couleurs severity.
+
+STOP.
+
+### 5.4
+
+Ajouter tooltip.
+
+STOP.
+
+### 5.5
+
+Ajouter clic → navigation.
+
+STOP.
+
+### 5.6
+
+Ajouter viewport synchronisé.
+
+STOP.
+
+---
+
+## PHASE 6 — FILTRES
+
+### 6.1
+
+Créer l'état central des filtres.
+
+STOP.
+
+### 6.2
+
+Ajouter recherche texte.
+
+STOP.
+
+### 6.3
+
+Ajouter recherche/navigation par date.
+
+STOP.
+
+### 6.4
+
+Ajouter filtre operator.
+
+STOP.
+
+### 6.5
+
+Ajouter filtre severity.
+
+STOP.
+
+### 6.6
+
+Ajouter filtre device.
+
+STOP.
+
+### 6.7
+
+Ajouter filtre RSRP.
+
+STOP.
+
+### 6.8
+
+Vérifier que Viewer + Strip + Minimap + Stats utilisent exactement le même dataset.
+
+STOP.
+
+---
+
+## PHASE 7 — NAVIGATION
+
+### 7.1
+
+Créer :
+
+```js
+scrollToLog(logId)
+```
+
+STOP.
+
+### 7.2
+
+Créer :
+
+```text
+focusedLogId
+```
+
+avec effet visuel temporaire.
+
+STOP.
+
+---
+
+## PHASE 8 — BOOKMARKS
+
+### 8.1
+
+Créer `useLocalStorage`.
+
+STOP.
+
+### 8.2
+
+Créer logique bookmarks.
+
+STOP.
+
+### 8.3
+
+Ajouter bouton bookmark sur les logs.
+
+STOP.
+
+### 8.4
+
+Créer panneau bookmarks.
+
+STOP.
+
+### 8.5
+
+Ajouter bookmark → scrollToLog.
+
+STOP.
+
+### 8.6
+
+Gérer bookmark masqué par filtres.
+
+STOP.
+
+---
+
+## PHASE 9 — NOTES
+
+### 9.1
+
+Ajouter notes aux bookmarks.
+
+STOP.
+
+### 9.2
+
+Ajouter édition et suppression.
+
+STOP.
+
+---
+
+## PHASE 10 — HIGHLIGHTS
+
+### 10.1
+
+Créer logique highlight.
+
+STOP.
+
+### 10.2
+
+Ajouter choix de couleur.
+
+STOP.
+
+### 10.3
+
+Ajouter suppression.
+
+STOP.
+
+### 10.4
+
+Persister dans localStorage.
+
+STOP.
+
+---
+
+## PHASE 11 — TOOLBAR
+
+### 11.1
+
+Finaliser statistiques compactes.
+
+STOP.
+
+### 11.2
+
+Finaliser les contrôles de filtres.
+
+STOP.
+
+### 11.3
+
+Ajouter compteur bookmarks.
+
+STOP.
+
+---
+
+## PHASE 12 — THÈMES
+
+### 12.1
+
+Finaliser dark mode.
+
+STOP.
+
+### 12.2
+
+Finaliser light mode.
+
+STOP.
+
+### 12.3
+
+Persister le thème.
+
+STOP.
+
+---
+
+## PHASE 13 — POLISH
+
+Procéder encore par petites étapes :
+
+```text
+13.1 responsive desktop
+13.2 empty states
+13.3 accessibility
+13.4 tooltips
+13.5 détails visuels
+13.6 optimisation des rerenders
+```
+
+Un seul point par tour.
+
+---
+
+## PHASE 14 — VALIDATION
+
+### 14.1
+
+Exécuter :
 
 ```bash
-npm install
 npm run build
 ```
 
-Ne considère pas la tâche terminée si le build échoue.
+Corriger uniquement les erreurs rencontrées.
+
+STOP si plusieurs problèmes nécessitent des modifications importantes.
+
+### 14.2
+
+Relancer :
+
+```bash
+npm run build
+```
+
+STOP.
+
+### 14.3
+
+Vérifier les principales interactions.
+
+STOP.
 
 ---
 
-# 53. AUTONOMIE
+# GESTION DES ERREURS
 
-Ne me demande pas de valider chaque choix technique.
+Si une commande échoue :
 
-Si un détail n'est pas précisé :
+1. lis l'erreur ;
+2. identifie la cause probable ;
+3. corrige uniquement cette cause ;
+4. relance la commande nécessaire ;
+5. arrête-toi lorsque l'étape fonctionne.
 
-1. utilise ton jugement ;
-2. choisis la solution la plus simple et robuste ;
-3. respecte l'architecture générale ;
-4. évite l'over-engineering ;
-5. continue l'implémentation.
-
-Ne t'arrête pas après avoir créé un squelette.
-
-Ne me fournis pas uniquement un tutoriel ou quelques snippets.
-
-Tu dois modifier directement les fichiers du projet et réaliser l'application.
+Ne profite pas d'une erreur pour refactorer toute l'application.
 
 ---
 
-# 54. PRIORITÉS
+# PROTECTION CONTRE LES BOUCLES
 
-Si tu dois faire des compromis, respecte cet ordre :
+Si tu as déjà tenté deux fois la même correction sans succès :
 
-1. fonctionnement réel ;
-2. fluidité avec 20 000 logs ;
-3. Log Viewer ;
-4. minimap interactive ;
-5. Operator Strip ;
-6. bookmarks + navigation ;
-7. filtres ;
-8. highlights ;
-9. UX ;
-10. esthétique ;
-11. fonctionnalités bonus.
+STOP.
+
+Réponds brièvement :
+
+```text
+Blocage :
+<erreur>
+
+Tentatives :
+- ...
+- ...
+
+Cause probable :
+...
+
+Prochaine correction recommandée :
+...
+```
+
+N'enchaîne pas indéfiniment les tentatives.
 
 ---
 
-# RÉSULTAT ATTENDU
+# INTERDICTION DE VERBOSITÉ
 
-Je veux obtenir une SPA complète :
+Ne produis jamais :
 
-```text
-NETWORK LOG EXPLORER
+* ton raisonnement étape par étape ;
+* de longues explications ;
+* une analyse détaillée avant d'agir ;
+* la totalité des fichiers après modification ;
+* un récapitulatif de toutes les exigences ;
+* une liste de ce qu'il restera à faire sur 50 lignes.
 
-OPERATOR STRIP | VIRTUALIZED LOG VIEWER | EVENT MINIMAP | BOOKMARKS
-```
+Réfléchis silencieusement.
 
-L'application doit permettre de comprendre rapidement :
+Utilise les outils.
 
-```text
-où sont les erreurs ?
-où sont les warnings ?
-quel opérateur était utilisé ?
-quel terminal est concerné ?
-quelle était la valeur RSRP ?
-quand la qualité réseau s'est-elle dégradée ?
-```
+Modifie les fichiers.
 
-Les éléments distinctifs principaux doivent être :
+Teste.
 
-### 1. Log Viewer
+Réponds brièvement.
 
-Dense, rapide, virtualisé.
+---
 
-### 2. Operator Strip
+# ÉTAT DE PROGRESSION
 
-```text
-Orange / SFR / Free / Bouygues
-```
+Tu dois conserver mentalement la phase actuelle.
 
-avec des couleurs alignées précisément sur les lignes.
-
-### 3. Minimap
+À la fin de chaque réponse, indique uniquement :
 
 ```text
-INFO / WARNING / ERROR
+Prochaine étape : X.X — nom
 ```
 
-représentant visuellement la totalité des logs filtrés et permettant de naviguer dedans.
+Au tour suivant, commence directement cette étape.
 
-### 4. Bookmarks / Notes / Highlights
+Ne recommence pas depuis la phase 1.
 
-Outils locaux permettant à l'utilisateur d'annoter son exploration.
+---
 
-Tout le projet doit rester **strictement frontend**.
+# PRIORITÉS
 
-Aucune architecture backend ou d'observabilité n'est nécessaire.
+Si un compromis est nécessaire :
 
-Commence maintenant par inspecter le projet existant. Conserve ce qui est déjà correctement configuré, notamment Vite, React et Tailwind s'ils fonctionnent déjà, puis implémente progressivement l'application complète.
+1. application fonctionnelle ;
+2. absence d'erreurs ;
+3. virtualisation ;
+4. performances ;
+5. Log Viewer ;
+6. navigation ;
+7. minimap ;
+8. Operator Strip ;
+9. filtres ;
+10. bookmarks ;
+11. UX ;
+12. esthétique ;
+13. bonus.
+
+---
+
+# BONUS
+
+Seulement lorsque toutes les fonctionnalités principales fonctionnent :
+
+```text
+Live mock mode
+```
+
+Un nouveau log peut être généré toutes les 1 à 3 secondes.
+
+Ne commence jamais ce bonus avant la validation complète du reste.
+
+---
+
+# PREMIÈRE ACTION
+
+Commence UNIQUEMENT par la micro-étape :
+
+```text
+1.1 — Inspecter le projet existant
+```
+
+Inspecte uniquement ce qui est nécessaire pour connaître :
+
+* la structure du projet ;
+* les dépendances ;
+* la configuration React/Vite ;
+* la configuration Tailwind.
+
+Ne commence aucune fonctionnalité.
+
+Ne crée encore aucun composant.
+
+Ne réécris aucun fichier inutilement.
+
+Une fois l'inspection terminée, réponds en maximum 8 lignes et termine par :
+
+```text
+Prochaine étape : 1.2 — Architecture minimale
+```
