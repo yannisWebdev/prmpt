@@ -1,5 +1,4 @@
 import { LOG_COUNT, OPERATORS } from '../constants/logs.js'
-import { getRsrpQuality } from '../utils/rsrp.js'
 import {
   DEGRADATION_PROFILE, DEVICE_COUNT, ERROR_MESSAGES, INFO_MESSAGES, WARNING_MESSAGES,
 } from './mockConfig.js'
@@ -43,6 +42,11 @@ function messageFor(severity, random, scenarioPosition, operatorChange) {
   return pick(INFO_MESSAGES, random)
 }
 
+function tagFor(random, isRsrpReport) {
+  if (isRsrpReport) return 'signal_measurement'
+  return pick(['radio_event', 'registration', 'connection', 'handover', 'heartbeat'], random)
+}
+
 export function generateLogs(count = LOG_COUNT, seed = 20260912) {
   const random = mulberry32(seed)
   const logs = []
@@ -75,14 +79,17 @@ export function generateLogs(count = LOG_COUNT, seed = 20260912) {
       operatorChange = `Operator changed from ${previousOperator} to ${OPERATORS[device.operatorIndex]}`
     }
 
-    if (scenarioPosition < 0 && sessionRemaining > DEGRADATION_PROFILE.length && random() < 0.006) scenarioPosition = 0
-    if (scenarioPosition >= 0) {
-      device.rsrp = DEGRADATION_PROFILE[scenarioPosition] + Math.round((random() - 0.5) * 2)
-      scenarioPosition += 1
-      if (scenarioPosition >= DEGRADATION_PROFILE.length) scenarioPosition = -1
-    } else {
-      device.rsrp = clamp(device.rsrp + Math.round((random() - 0.48) * 5), -119, -67)
-      if (device.rsrp < -110 && random() < 0.28) device.rsrp += 8
+    const isRsrpReport = random() < 0.22
+    if (isRsrpReport) {
+      if (scenarioPosition < 0 && sessionRemaining > DEGRADATION_PROFILE.length && random() < 0.006) scenarioPosition = 0
+      if (scenarioPosition >= 0) {
+        device.rsrp = DEGRADATION_PROFILE[scenarioPosition] + Math.round((random() - 0.5) * 2)
+        scenarioPosition += 1
+        if (scenarioPosition >= DEGRADATION_PROFILE.length) scenarioPosition = -1
+      } else {
+        device.rsrp = clamp(device.rsrp + Math.round((random() - 0.48) * 5), -119, -67)
+        if (device.rsrp < -110 && random() < 0.28) device.rsrp += 8
+      }
     }
 
     const currentScenarioPosition = scenarioPosition < 0 ? -1 : scenarioPosition - 1
@@ -92,27 +99,18 @@ export function generateLogs(count = LOG_COUNT, seed = 20260912) {
     const severity = operatorChange ? 'INFO' : resolveSeverity(rsrp, latency, packetLoss, random, currentScenarioPosition)
     const networkType = resolveNetworkType(rsrp, random)
     const operator = OPERATORS[device.operatorIndex]
-    const operatorCode = { Orange: '20801', SFR: '20810', 'Bouygues Telecom': '20820', Free: '20815' }[operator]
-
     if (random() < 0.035 || operatorChange) device.cellSequence += 1 + Math.floor(random() * 17)
     timestamp += 650 + Math.floor(random() * 3100)
 
+    const text = isRsrpReport
+      ? `rsrp=${rsrp} dBm`
+      : messageFor(severity, random, currentScenarioPosition, operatorChange)
     logs.push({
-      id: `log_${String(index + 1).padStart(6, '0')}`,
-      timestamp: new Date(timestamp).toISOString(),
-      deviceId: device.id,
-      operator,
-      rsrp,
-      severity,
-      message: messageFor(severity, random, currentScenarioPosition, operatorChange),
-      context: {
-        networkType,
-        cellId: `${operatorCode}-${String(device.cellSequence).padStart(6, '0')}`,
-        frequency: networkType === '5G' ? pick([2100, 3500, 3700], random) : networkType === '4G' ? pick([700, 800, 1800, 2600], random) : 900,
-        latency,
-        packetLoss,
-        signalQuality: getRsrpQuality(rsrp).toLowerCase(),
-      },
+      ctx: { operator },
+      date: new Date(timestamp).toISOString(),
+      tag: tagFor(random, isRsrpReport),
+      level: severity === 'ERROR' ? 'E' : severity === 'WARNING' ? 'W' : 'D',
+      text: isRsrpReport ? text : `${text}; network=${networkType}`,
     })
   }
 

@@ -1,5 +1,4 @@
-import { Bookmark, BookmarkCheck, Highlighter, X } from 'lucide-react'
-import { HIGHLIGHT_COLORS } from '../../constants/logs'
+import { X } from 'lucide-react'
 import { formatFullDate } from '../../utils/formatDate'
 import { getRsrpQuality } from '../../utils/rsrp'
 import { IconButton } from '../ui/IconButton'
@@ -9,7 +8,7 @@ function Detail({ label, children }) {
   return <div className="detail-item"><dt>{label}</dt><dd>{children}</dd></div>
 }
 
-export function LogDetails({ log, bookmarked, highlight, onClose, onToggleBookmark, onSetHighlight }) {
+export function LogDetails({ log, onClose }) {
   if (!log) return null
   return (
     <aside className="log-details" aria-label={`Details for ${log.id}`}>
@@ -19,26 +18,6 @@ export function LogDetails({ log, bookmarked, highlight, onClose, onToggleBookma
           <h2>{log.message}</h2>
         </div>
         <div className="details-actions">
-          <button type="button" className={`detail-action ${bookmarked ? 'is-active' : ''}`} onClick={() => onToggleBookmark(log.id)}>
-            {bookmarked ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
-            {bookmarked ? 'Bookmarked' : 'Bookmark'}
-          </button>
-          <div className="highlight-actions" aria-label="Highlight color">
-            <Highlighter size={17} aria-hidden="true" />
-            <span className="highlight-label">Highlight</span>
-            {Object.entries(HIGHLIGHT_COLORS).map(([color, config]) => (
-              <button
-                type="button"
-                key={color}
-                className={highlight === color ? 'is-active' : ''}
-                style={{ '--swatch': config.swatch }}
-                aria-label={`Highlight ${config.label}`}
-                title={`Highlight ${config.label}`}
-                onClick={() => onSetHighlight(log.id, highlight === color ? null : color)}
-              />
-            ))}
-            {highlight && <button type="button" className="remove-highlight" onClick={() => onSetHighlight(log.id, null)}>Remove</button>}
-          </div>
           <IconButton label="Close log details" onClick={onClose}><X size={18} /></IconButton>
         </div>
       </div>

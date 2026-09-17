@@ -1,0 +1,46 @@
+Previous_page :
+/api/logs/{device_id}
+?date_timestamp&search_previous=token
+
+Chaque appel retourne max 100 lignes: {
+  logs: [
+    {
+      ctx: {
+        operator: "Orange",
+      },
+      date: <DATE>,
+      tag: "radio_event",
+      level: "D",
+      text: "event=registered to=orange",
+    },
+    {
+      ctx: {
+        operator: "Orange",
+      },
+      date: <DATE>,
+      tag: "radio_event",
+      level: "D",
+      text: "rsrp=-100 dBm",
+    },
+    {
+      ctx: {
+        operator: "SFR",
+      },
+      date: <DATE>,
+      tag: "radio_event",
+      level: "D",
+      text: "event=registered to=SFR",
+    },
+    {
+      ctx: {
+        operator: "SFR",
+      },
+      date: <DATE>,
+      tag: "radio_event",
+      level: "D",
+      text: "rsrp=-87 dBm",
+    },
+  ],
+  previous_token: "122ad12ee",
+  next_token: "536de35aa"
+}
